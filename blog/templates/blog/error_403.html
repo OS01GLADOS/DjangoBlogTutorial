@@ -1,0 +1,17 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    <h1>ERROR 403: Forbidden</h1>
+    <p>You trying to do action, that was forbidden by server</p>
+    <script>
+        function Reload() {
+            document.location.reload();
+        }
+
+        function GoBack() {
+            history.go(-1)
+        }
+    </script>
+    <a href="#" onclick="Reload()">reload page</a>
+    <a href="#" onclick="GoBack()">to previous page</a>
+{% endblock %}

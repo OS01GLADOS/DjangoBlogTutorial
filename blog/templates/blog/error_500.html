@@ -1,0 +1,12 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    <h1>ERROR 500: Internal Server Error</h1>
+    <p>Something went wrong. Reload page or try again later</p>
+    <script>
+        function Reload() {
+            document.location.reload();
+        }
+    </script>
+    <a href="#" onclick="Reload()">reload page</a>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    <h1>ERROR 400: Bad Request</h1>
+    <p>Server unable to process your request</p>
+    <script>
+        function GoBack() {
+            history.go(-1)
+        }
+    </script>
+    <a href="#" onclick="GoBack()">to previous page</a>
+{% endblock %}

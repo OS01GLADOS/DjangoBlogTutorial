@@ -1,0 +1,12 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    <h1>ERROR 404: Not Found</h1>
+    <p>Requested page does not exist</p>
+    <script>
+        function GoBack() {
+            history.go(-1)
+        }
+    </script>
+    <a href="#" onclick="GoBack()">return to previous page</a>
+{% endblock %}
