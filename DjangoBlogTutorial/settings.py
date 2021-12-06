@@ -23,13 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-wb%@ri66@2*qn1lpkh5owcbn$p$v1$f)kcpw(y%c3w%(9g!8ax'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Application definition
 
 INSTALLED_APPS = [
+    'comments.apps.CommentsConfig',
     'blog.apps.BlogConfig',
     'users.apps.UsersConfig',
     'crispy_forms',

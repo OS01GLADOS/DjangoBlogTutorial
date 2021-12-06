@@ -1,4 +1,5 @@
 {% extends 'blog/base.html' %}
+{% load crispy_forms_tags %}
 {% block content %}
     <article class="media content-section">
         <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
@@ -18,4 +19,68 @@
             <p class="article-content">{{ object.content }}</p>
         </div>
     </article>
+
+    {# form for new comment is here #}
+    {% if user.is_authenticated %}
+
+        <script>
+            window.addEventListener("load", function () {
+                function sendData() {
+                    const XHR = new XMLHttpRequest();
+                    const FD = new FormData(form);
+
+                    // Define what happens on successful data submission
+                    XHR.addEventListener("load", function (event) {
+                        window.location.reload()
+                    });
+
+                    // Define what happens in case of error
+                    XHR.addEventListener("error", function (event) {
+                        alert('Oops! Something went wrong.');
+                    });
+                    // Set up our request
+                    XHR.open("POST", "{% url 'comments-add' post.id%}");
+
+                    // The data sent is what the user provided in the form
+                    XHR.send(FD);
+
+
+                }
+
+                // Access the form element...
+                const form = document.getElementById("comment-form");
+
+                // ...and take over its submit event.
+                form.addEventListener("submit", function (event) {
+                    event.preventDefault();
+                    sendData();
+                });
+            });
+        </script>
+
+        <form id="comment-form">
+            <div class="form-group">
+                {% csrf_token %}
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4">Leave a comment</legend>
+                    {{ comment_form | crispy }}
+                </fieldset>
+
+                <button class="btn btn-outline-info" type="submit">send comment</button>
+            </div>
+        </form>
+    {% else %}
+        <h1>You must log in to leave a comment</h1>
+    {% endif %}
+    {% for comment in object.comments.all %}
+        <img class="rounded-circle article-img" src="{{ comment.sender.profile.image.url }}">
+        <div class="media-body">
+            <div class="article-metadata">
+                <a class="mr-2" href="{% url 'user-posts' comment.sender.username %}"> {{ comment.sender }}</a>
+                <small class="text-muted">{{ comment.date_posted|date:"G:i M j, Y" }}</small>
+            </div>
+            <p class="article-content">{{ comment.content }}</p>
+        </div>
+    {% endfor %}
+
 {% endblock %}
