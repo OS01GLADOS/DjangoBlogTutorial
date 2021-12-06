@@ -1,5 +1,7 @@
+from django.http import HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
 from .models import Post
+from comments.models import Comments
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.views.generic import (
@@ -9,13 +11,7 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
 )
-
-
-def home(request):
-    context = {
-        'posts': Post.objects.all()
-    }
-    return render(request, 'blog/home.html', context)
+from comments.forms import CommentCreateForm
 
 
 class PostListView(ListView):
@@ -39,6 +35,11 @@ class UserPostListView(ListView):
 
 class PostDetailView(DetailView):
     model = Post
+
+    def get_context_data(self, **kwargs):
+        context = super(PostDetailView, self).get_context_data(**kwargs)
+        context['comment_form'] = CommentCreateForm()
+        return context
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
@@ -81,7 +82,7 @@ def about(request):
 
 
 def error_404(request, exception):
-    return render(request, 'blog/error_404.html', {})
+    return HttpResponseNotFound(render(request, 'blog/error_404.html', {}))
 
 
 def error_500(request):
@@ -89,7 +90,7 @@ def error_500(request):
 
 
 def error_403(request, exception):
-    return render(request, 'blog/error_403.html', {})
+    return HttpResponseForbidden(render(request, 'blog/error_403.html', {}))
 
 
 def error_400(request, exception):
