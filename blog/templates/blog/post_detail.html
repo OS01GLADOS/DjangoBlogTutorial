@@ -23,42 +23,7 @@
     {# form for new comment is here #}
     {% if user.is_authenticated %}
 
-        <script>
-            window.addEventListener("load", function () {
-                function sendData() {
-                    const XHR = new XMLHttpRequest();
-                    const FD = new FormData(form);
-
-                    // Define what happens on successful data submission
-                    XHR.addEventListener("load", function (event) {
-                        window.location.reload()
-                    });
-
-                    // Define what happens in case of error
-                    XHR.addEventListener("error", function (event) {
-                        alert('Oops! Something went wrong.');
-                    });
-                    // Set up our request
-                    XHR.open("POST", "{% url 'comments-add' post.id%}");
-
-                    // The data sent is what the user provided in the form
-                    XHR.send(FD);
-
-
-                }
-
-                // Access the form element...
-                const form = document.getElementById("comment-form");
-
-                // ...and take over its submit event.
-                form.addEventListener("submit", function (event) {
-                    event.preventDefault();
-                    sendData();
-                });
-            });
-        </script>
-
-        <form id="comment-form">
+        <form id="comment-form" method="post" action="{% url 'comments-add' object.id %}">
             <div class="form-group">
                 {% csrf_token %}
                 <fieldset class="form-group">
@@ -72,15 +37,87 @@
     {% else %}
         <h1>You must log in to leave a comment</h1>
     {% endif %}
-    {% for comment in object.comments.all %}
-        <img class="rounded-circle article-img" src="{{ comment.sender.profile.image.url }}">
-        <div class="media-body">
-            <div class="article-metadata">
-                <a class="mr-2" href="{% url 'user-posts' comment.sender.username %}"> {{ comment.sender }}</a>
-                <small class="text-muted">{{ comment.date_posted|date:"G:i M j, Y" }}</small>
+    <div id="comments">
+        {% for comment in object.comments.all.reverse %}
+            <div class="container">
+                <img class="rounded-circle article-img" src="{{ comment.sender.profile.image.url }}">
+                <div class="media-body">
+                    <div class="article-metadata">
+                        <a class="mr-2" href="{% url 'user-posts' comment.sender.username %}"> {{ comment.sender }}</a>
+                        <small class="text-muted">{{ comment.date_posted|date:"G:i M j, Y" }}</small>
+                    </div>
+                    <p class="article-content">{{ comment.content }}</p>
+                </div>
             </div>
-            <p class="article-content">{{ comment.content }}</p>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
+
+    <script>
+
+        let last_update_date = new Date()
+
+
+        function send_comments_update_request() {
+
+            $.get('{% url "comments-get" post.id %}', {time: last_update_date.toISOString()}, parse_comments_update_response)
+        }
+
+        function parse_comments_update_response(data, success, request) {
+            let res = JSON.parse(data)
+
+
+            date = request.getResponseHeader('Date')
+
+            last_update_date = new Date(date)
+
+            if (res.length >= 1) {
+                for (i = 0; i < res.length; i++) {
+                    let obj_to_insert = document.createElement('div')
+                    obj_to_insert.classList.add('container')
+
+                    let img = document.createElement('img')
+                    img.classList.add('rounded-circle', 'article-img')
+
+                    let div = document.createElement('div')
+                    div.classList.add('media-body')
+
+                    let inner_div = document.createElement('div')
+                    inner_div.classList.add('article-metadata')
+
+                    let small = document.createElement('small')
+                    small.classList.add('text-muted')
+
+                    let a = document.createElement('a')
+                    a.classList.add('me-2')
+
+                    let p = document.createElement('p')
+                    p.classList.add('article-content')
+
+
+                    inner_div.append(a, small)
+                    div.append(inner_div, p)
+                    obj_to_insert.append(img, div)
+
+                    img.src = res[i].sender_pic
+                    a.href = res[i].sender_link
+                    a.append(res[i].sender__username)
+                    small.append(res[i].date_posted)
+                    p.append(res[i].content)
+
+                    let comments_section = $("#comments")
+
+                    comments_section_childs = comments_section.children()
+                    comments_section.innerHTML = ''
+                    comments_section.append(obj_to_insert)
+                    comments_section.append(comments_section_childs)
+
+                }
+            }
+
+
+        }
+
+        setInterval(send_comments_update_request, 5000);
+    </script>
 
 {% endblock %}
