@@ -26,6 +26,7 @@ from api import views as api_views
 router = routers.DefaultRouter()
 router.register(r'users', api_views.UserViewSet)
 router.register(r'groups', api_views.GroupViewSet)
+router.register(r'posts', api_views.PostViewSet)
 
 
 urlpatterns = [
