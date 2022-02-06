@@ -20,7 +20,18 @@ from users import views as users_views
 from django.conf import settings
 from django.conf.urls.static import static
 
+from rest_framework import routers
+from api import views as api_views
+
+router = routers.DefaultRouter()
+router.register(r'users', api_views.UserViewSet)
+router.register(r'groups', api_views.GroupViewSet)
+
+
 urlpatterns = [
+    path('api/', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    
     path('admin/', admin.site.urls),
     path('register/', users_views.register, name='register'),
     path('profile/', users_views.profile, name='profile'),

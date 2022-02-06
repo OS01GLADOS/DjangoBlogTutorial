@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     'comments.apps.CommentsConfig',
     'blog.apps.BlogConfig',
     'users.apps.UsersConfig',
+
+    'rest_framework',
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -144,3 +146,9 @@ EMAIL_USE_TLS = True
 
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
