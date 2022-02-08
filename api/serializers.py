@@ -16,7 +16,14 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = ['url', 'name']
 
+
 class PostSerializer(serializers.HyperlinkedModelSerializer):
+    # author as usernawe
+    author_username = serializers.CharField(source="author.username", read_only=True)
+    author_id = serializers.IntegerField(source="author.id", read_only=True)
+    date_posted = serializers.DateTimeField(format= "%b %d %Y, %H:%m")
     class Meta:
         model = Post
-        fields = ['title', 'content', 'date_posted', 'author']
+        fields = ['id','title', 'content', 'date_posted', 'author_id', 'author_username']
+
+    
