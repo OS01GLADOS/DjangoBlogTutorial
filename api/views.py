@@ -21,3 +21,4 @@ class GroupViewSet(viewsets.ModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by('-date_posted')
     serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]

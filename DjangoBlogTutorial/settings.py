@@ -154,9 +154,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
 }
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5500',  'http://localhost:8000', 'http://localhost:8080'
+    'http://localhost:5500',  'http://localhost:8000', 'http://localhost:8080', 'http://127.0.0.1:8080'
 ]
