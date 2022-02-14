@@ -25,6 +25,3 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Post
         fields = ['id','title', 'content', 'date_posted', 'author_id', 'author_username']
-
-    
-    #TODO get - withou
