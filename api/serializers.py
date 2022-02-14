@@ -9,7 +9,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ['url', 'username', 'email', 'groups']
-
+    
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -25,3 +25,4 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Post
         fields = ['id','title', 'content', 'date_posted', 'author_id', 'author_username']
+    

@@ -22,4 +22,10 @@ class GroupViewSet(viewsets.ModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by('-date_posted')
     serializer_class = PostSerializer
-    permission_classes = [AuthorAndStaffEdit]
+    permission_classes = [AuthorAndStaffEdit, permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        res = self.request.query_params.get('author')
+        if res:
+            return self.queryset.filter(author__username=res)
+        return self.queryset
