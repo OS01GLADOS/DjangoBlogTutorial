@@ -2,9 +2,10 @@ from django.contrib.auth.models import User, Group
 from api import serializers
 from rest_framework import viewsets
 from rest_framework import permissions
-from api.serializers import UserSerializer, GroupSerializer, PostSerializer
-from api.permissions import AuthorAndStaffEdit
+from api.serializers import UserSerializer, GroupSerializer, PostSerializer, ProfileSerializer
+from api.permissions import AuthorAndStaffEdit, NoDeletePermission, DenyAccesToOtherUsersProfiles
 
+from users.models import Profile
 from blog.models import Post
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -12,6 +13,10 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.AllowAny, NoDeletePermission, DenyAccesToOtherUsersProfiles]
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()

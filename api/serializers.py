@@ -1,4 +1,6 @@
+from asyncore import read
 from dataclasses import field, fields
+import email
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from users.models import Profile
@@ -12,9 +14,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'username', 'email', 'groups']
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+    username = serializers.CharField(source="user.username", read_only=False)
+    email = serializers.EmailField(source="user.email", read_only=False)
+    password = serializers.CharField(source="user.password", read_only=False)
     class Meta:
         model = Profile
-        fields = ['']
+        fields = ['id', 'username', 'email', 'password', 'image']
     
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
