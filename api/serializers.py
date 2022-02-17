@@ -58,8 +58,15 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class PostSerializer(serializers.HyperlinkedModelSerializer):
     author_username = serializers.CharField(source="author.username", read_only=True)
     author_id = serializers.IntegerField(source="author.id", read_only=True)
-    date_posted = serializers.DateTimeField()
+    date_posted = serializers.DateTimeField(read_only=True)
     class Meta:
         model = Post
         fields = ['id','title', 'content', 'date_posted', 'author_id', 'author_username']
     
+    def create(self, validated_data):
+        new_post = Post()
+        new_post.author = self.context['request'].user
+        new_post.title = validated_data.get('title')
+        new_post.content = validated_data.get('content')
+        new_post.save()
+        return new_post
