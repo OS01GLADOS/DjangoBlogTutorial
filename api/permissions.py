@@ -23,7 +23,7 @@ class NoDeletePermission(permissions.BasePermission):
     edit_methods = ('DELETE')
 
     def has_object_permission(self, request, view, obj):
-        if request.user.is_superuser:
+        if request.user.is_superuser or request.user.is_staff:
             return True
 
         if request.user.is_staff:
@@ -36,8 +36,11 @@ class NoDeletePermission(permissions.BasePermission):
 
 class DenyAccesToOtherUsersProfiles(permissions.BasePermission):
     def has_permission(self, requset, view):
-        return True
-        
+        if requset.user.is_authenticated:
+            return True
+
+        return False
+
     def has_object_permission(self, request, view, obj):
         if request.user.is_superuser:
             return True
@@ -50,3 +53,13 @@ class DenyAccesToOtherUsersProfiles(permissions.BasePermission):
 
         return False
         
+
+class AllowCreateProfileWithoutAuthentication(permissions.BasePermission):
+
+    edit_methods = ('POST', 'GET')
+
+    def has_permission(self, request, view):
+        if request.method == "POST":
+            return True
+        
+        return False

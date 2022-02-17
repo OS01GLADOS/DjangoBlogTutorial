@@ -3,7 +3,7 @@ from api import serializers
 from rest_framework import viewsets
 from rest_framework import permissions
 from api.serializers import UserSerializer, GroupSerializer, PostSerializer, ProfileSerializer
-from api.permissions import AuthorAndStaffEdit, NoDeletePermission, DenyAccesToOtherUsersProfiles
+from api.permissions import AuthorAndStaffEdit, NoDeletePermission, DenyAccesToOtherUsersProfiles, AllowCreateProfileWithoutAuthentication
 
 from users.models import Profile
 from blog.models import Post
@@ -16,7 +16,12 @@ class UserViewSet(viewsets.ModelViewSet):
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-    permission_classes = [permissions.AllowAny, NoDeletePermission, DenyAccesToOtherUsersProfiles]
+    permission_classes = [ NoDeletePermission, DenyAccesToOtherUsersProfiles | AllowCreateProfileWithoutAuthentication]
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return self.queryset
+        else:
+            return self.queryset.filter(user_id=self.request.user.id)
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
