@@ -15,9 +15,10 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     username = serializers.CharField(source="user.username", read_only=False)
     email = serializers.EmailField(source="user.email", read_only=False)
     password = serializers.CharField(required=False)
+    registration_date = serializers.DateTimeField(source="user.date_joined", read_only=True)
     class Meta:
         model = Profile
-        fields = ['id', 'username', 'email','password', 'image']
+        fields = ['id', 'username', 'email','password', 'image','registration_date']
     
     def get_validation_exclusions(self):
         exclusions = super(ProfileSerializer, self).get_validation_exclusions()
@@ -31,7 +32,8 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
         instance.user.username = updated_user.get('username', instance.user.username)
         instance.user.email = updated_user.get('email', instance.user.email)
         
-        instance.image.save(content=validated_data.get('image'), name=str(validated_data.get('image')))
+        if validated_data.get('image'):
+            instance.image.save(content=validated_data.get('image'), name=str(validated_data.get('image')))
         new_password = validated_data.get('password')
         if new_password:
             instance.user.set_password(new_password)

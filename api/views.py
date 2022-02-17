@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User, Group
-from api import serializers
 from rest_framework import viewsets
 from rest_framework import permissions
 from api.serializers import UserSerializer, GroupSerializer, PostSerializer, ProfileSerializer
@@ -18,10 +17,13 @@ class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
     permission_classes = [ NoDeletePermission, DenyAccesToOtherUsersProfiles | AllowCreateProfileWithoutAuthentication]
     def get_queryset(self):
+        get_self = self.request.query_params.get('self')
+        if get_self:
+            return self.queryset.filter(user_id=self.request.user.id)
         if self.request.user.is_superuser:
             return self.queryset
-        else:
-            return self.queryset.filter(user_id=self.request.user.id)
+        return self.queryset.filter(user_id=self.request.user.id)
+            
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
