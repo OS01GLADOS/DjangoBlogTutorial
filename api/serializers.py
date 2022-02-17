@@ -1,6 +1,3 @@
-from asyncore import read
-from dataclasses import field, fields
-from select import select
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from users.models import Profile
@@ -41,10 +38,14 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
         instance.user.save()
         instance.save()
         return instance
-
-    def create():
-        pass
-
+    
+    def create(self, validated_data):
+        new_user = validated_data.get('user')
+        password = validated_data.get('password')
+        user=User(username=new_user.get('username'), email = new_user.get('email'))
+        user.set_password(password)
+        user.save()
+        return user.profile
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
