@@ -34,3 +34,4 @@ class PostViewSet(viewsets.ModelViewSet):
         if res:
             return self.queryset.filter(author__username=res)
         return self.queryset
+
