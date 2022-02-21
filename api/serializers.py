@@ -15,6 +15,7 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     username = serializers.CharField(source="user.username", read_only=False)
     email = serializers.EmailField(source="user.email", read_only=False)
     password = serializers.CharField(required=False)
+    id = serializers.IntegerField(source="user.id", read_only=True)
     registration_date = serializers.DateTimeField(source="user.date_joined", read_only=True)
     class Meta:
         model = Profile
