@@ -16,6 +16,8 @@ markdown = "*"
 django-filter = "*"
 django-cors-headers = "*"
 djangorestframework-simplejwt = "*"
+django-storages = "*"
+boto3 = "*"
 
 [dev-packages]
 

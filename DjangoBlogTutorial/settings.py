@@ -26,7 +26,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'blog']
 
 # Application definition
 
@@ -34,8 +34,11 @@ INSTALLED_APPS = [
     'comments.apps.CommentsConfig',
     'blog.apps.BlogConfig',
     'users.apps.UsersConfig',
+
+    'storages',
     'corsheaders',
     'rest_framework',
+
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -160,7 +163,7 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5500',  'http://localhost:8000', 'http://localhost:8080', 'http://127.0.0.1:8080'
+    'http://localhost:5500',  'http://localhost:8000', 'http://localhost:8080', 'http://127.0.0.1:8080', 'http://blog:8080'
 ]
 CORS_ALLOW_HEADERS = [
     "accept",
@@ -177,3 +180,12 @@ CORS_ALLOW_HEADERS = [
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=1),
 }
+
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+
+AWS_S3_FILE_OVERITE = False
+AWS_DEFAULT_ACL = None
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'

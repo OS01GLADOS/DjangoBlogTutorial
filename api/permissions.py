@@ -63,3 +63,13 @@ class AllowCreateProfileWithoutAuthentication(permissions.BasePermission):
             return True
         
         return False
+
+class UpdateOrDeleteOnly(permissions.BasePermission):
+    
+    edit_methods = ('GET', 'POST', 'DELETE')
+
+    def has_permission(self, request, view):
+        if request.method in self.edit_methods:
+            return True
+        
+        return False

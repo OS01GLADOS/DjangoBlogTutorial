@@ -34,7 +34,6 @@ router.register(r'groups', api_views.GroupViewSet)
 router.register(r'posts', api_views.PostViewSet)
 router.register(r'profiles',api_views.ProfileViewSet)
 
-
 urlpatterns = [
 
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

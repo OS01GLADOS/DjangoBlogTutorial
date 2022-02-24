@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from users.models import Profile
 
-from blog.models import Post
+from blog.models import Post, PostPicture
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -10,6 +10,13 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ['url', 'username', 'email', 'groups']
 
+class PostPicSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = PostPicture
+        fields = ['image_number','image']
+
+    def create(self, validated_data):
+        return super().create(validated_data)
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     username = serializers.CharField(source="user.username", read_only=False)
@@ -55,15 +62,18 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = ['url', 'name']
 
-
 class PostSerializer(serializers.HyperlinkedModelSerializer):
     author_username = serializers.CharField(source="author.username", read_only=True)
     author_id = serializers.IntegerField(source="author.id", read_only=True)
     date_posted = serializers.DateTimeField(read_only=True)
+    pics = PostPicSerializer(many=True)
     class Meta:
         model = Post
-        fields = ['id','title', 'content', 'date_posted', 'author_id', 'author_username']
+        fields = ['id','title', 'content', 'date_posted', 'author_id', 'author_username', 'pics']
     
+    # def get_pictures(self, obj):
+    #     return PostPicSerializer(obj.post_data, many=True)
+
     def create(self, validated_data):
         new_post = Post()
         new_post.author = self.context['request'].user
