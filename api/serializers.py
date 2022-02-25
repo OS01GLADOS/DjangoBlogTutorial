@@ -10,13 +10,10 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ['url', 'username', 'email', 'groups']
 
-class PostPicSerializer(serializers.HyperlinkedModelSerializer):
+class PostPicSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostPicture
-        fields = ['image_number','image']
-
-    def create(self, validated_data):
-        return super().create(validated_data)
+        fields = ['image', 'image_number']
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     username = serializers.CharField(source="user.username", read_only=False)
@@ -66,13 +63,10 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
     author_username = serializers.CharField(source="author.username", read_only=True)
     author_id = serializers.IntegerField(source="author.id", read_only=True)
     date_posted = serializers.DateTimeField(read_only=True)
-    pics = PostPicSerializer(many=True)
+    picture = PostPicSerializer(source="pics", many=True)
     class Meta:
         model = Post
-        fields = ['id','title', 'content', 'date_posted', 'author_id', 'author_username', 'pics']
-    
-    # def get_pictures(self, obj):
-    #     return PostPicSerializer(obj.post_data, many=True)
+        fields = ['id','title', 'content', 'date_posted', 'author_id', 'author_username', 'picture']
 
     def create(self, validated_data):
         new_post = Post()

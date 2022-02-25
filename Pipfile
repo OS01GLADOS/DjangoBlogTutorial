@@ -18,6 +18,7 @@ django-cors-headers = "*"
 djangorestframework-simplejwt = "*"
 django-storages = "*"
 boto3 = "*"
+django-s3direct = "*"
 
 [dev-packages]
 

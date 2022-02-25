@@ -2,7 +2,6 @@ from unicodedata import lookup
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
-from api import serializers
 from api.serializers import UserSerializer, GroupSerializer, PostSerializer, ProfileSerializer, PostPicSerializer
 from api.permissions import AuthorAndStaffEdit, NoDeletePermission, DenyAccesToOtherUsersProfiles, AllowCreateProfileWithoutAuthentication, UpdateOrDeleteOnly
 
