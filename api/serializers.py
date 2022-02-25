@@ -1,3 +1,5 @@
+from copyreg import pickle
+from dataclasses import field, fields
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from users.models import Profile
@@ -10,10 +12,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ['url', 'username', 'email', 'groups']
 
-class PostPicSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PostPicture
-        fields = ['image', 'image_number']
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     username = serializers.CharField(source="user.username", read_only=False)
@@ -59,14 +57,31 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = ['url', 'name']
 
+class PostPictureCRUDSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = PostPicture
+        fields = '__all__'
+
+class PostPictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostPicture
+        fields = ['image', 'image_number']
+
+
 class PostSerializer(serializers.HyperlinkedModelSerializer):
     author_username = serializers.CharField(source="author.username", read_only=True)
     author_id = serializers.IntegerField(source="author.id", read_only=True)
     date_posted = serializers.DateTimeField(read_only=True)
-    picture = PostPicSerializer(source="pics", many=True)
+    pics = serializers.SerializerMethodField()
+
+    def get_pics(self, obj):
+        results = PostPicture.objects.filter(post__id=obj.id)
+        return PostPictureSerializer(results, many=True).data
+
+
     class Meta:
         model = Post
-        fields = ['id','title', 'content', 'date_posted', 'author_id', 'author_username', 'picture']
+        fields = ['id','title', 'content', 'date_posted', 'author_id', 'author_username', 'pics']
 
     def create(self, validated_data):
         new_post = Post()
@@ -75,3 +90,11 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         new_post.content = validated_data.get('content')
         new_post.save()
         return new_post
+
+    def update(self, instance, validated_data):
+        validated_data
+        
+        instance.title = validated_data.get('title')
+        instance.content = validated_data.get('content')
+        instance.save()
+        return instance

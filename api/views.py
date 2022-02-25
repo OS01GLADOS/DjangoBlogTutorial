@@ -1,14 +1,12 @@
-from unicodedata import lookup
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
-from api.serializers import UserSerializer, GroupSerializer, PostSerializer, ProfileSerializer, PostPicSerializer
+
+from api.serializers import UserSerializer, GroupSerializer, PostSerializer, ProfileSerializer, PostPictureCRUDSerializer
 from api.permissions import AuthorAndStaffEdit, NoDeletePermission, DenyAccesToOtherUsersProfiles, AllowCreateProfileWithoutAuthentication, UpdateOrDeleteOnly
 
 from users.models import Profile
 from blog.models import Post, PostPicture
-
-from rest_framework.generics import ListAPIView
 
 
 
@@ -47,8 +45,7 @@ class PostViewSet(viewsets.ModelViewSet):
             return self.queryset.filter(author__username=res)
         return self.queryset
 
-class PostPicViewSet(ListAPIView):
+class PostPicViewSet(viewsets.ModelViewSet):
     queryset = PostPicture.objects.all()
-    serializer_class = PostPicSerializer
+    serializer_class = PostPictureCRUDSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, UpdateOrDeleteOnly]
-    lookup_field = 'post__id'

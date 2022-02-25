@@ -33,6 +33,7 @@ router.register(r'users', api_views.UserViewSet)
 router.register(r'groups', api_views.GroupViewSet)
 router.register(r'posts', api_views.PostViewSet)
 router.register(r'profiles',api_views.ProfileViewSet)
+router.register(r'postPics', api_views.PostPicViewSet)
 
 urlpatterns = [
 

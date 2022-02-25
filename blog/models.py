@@ -19,4 +19,4 @@ class Post(models.Model):
 class PostPicture(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='pics')
     image = models.URLField(null=True)
-    image_number = models.IntegerField()
+    image_number = models.IntegerField(default=1)
