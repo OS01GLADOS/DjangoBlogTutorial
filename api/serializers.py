@@ -1,10 +1,14 @@
-from copyreg import pickle
-from dataclasses import field, fields
+import random
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from users.models import Profile
 
+from DjangoBlogTutorial import settings
+
 from blog.models import Post, PostPicture
+
+import boto3
+from botocore.client import Config
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -67,12 +71,36 @@ class PostPictureSerializer(serializers.ModelSerializer):
         model = PostPicture
         fields = ['image', 'image_number']
 
-
 class PostSerializer(serializers.HyperlinkedModelSerializer):
     author_username = serializers.CharField(source="author.username", read_only=True)
     author_id = serializers.IntegerField(source="author.id", read_only=True)
     date_posted = serializers.DateTimeField(read_only=True)
     pics = serializers.SerializerMethodField()
+
+    upload_pics_url = serializers.SerializerMethodField()
+
+    def get_upload_pics_url(self, obj):
+        s3_signature ={
+            'v4':'s3v4',
+            'v2':'s3'
+        }
+        filename = self.context['request'].query_params['name_of_file']
+        url = boto3.client('s3',
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            config=Config(signature_version=s3_signature['v4']),
+            region_name='us-east-1'
+        ).generate_presigned_url(
+            ClientMethod='put_object', 
+            Params={
+                'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 
+                'Key': 'posts_pictures/'+str(obj.id)+'/'+filename,
+                "ContentType": "image/png",
+            },
+            HttpMethod="PUT",
+            ExpiresIn=100000,
+            )
+        return url
 
     def get_pics(self, obj):
         results = PostPicture.objects.filter(post__id=obj.id)
@@ -81,7 +109,7 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id','title', 'content', 'date_posted', 'author_id', 'author_username', 'pics']
+        fields = ['id','title', 'content', 'date_posted', 'author_id', 'author_username', 'pics', 'upload_pics_url']
 
     def create(self, validated_data):
         new_post = Post()

@@ -8,8 +8,6 @@ from api.permissions import AuthorAndStaffEdit, NoDeletePermission, DenyAccesToO
 from users.models import Profile
 from blog.models import Post, PostPicture
 
-
-
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
