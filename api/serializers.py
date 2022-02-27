@@ -84,22 +84,28 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
             'v4':'s3v4',
             'v2':'s3'
         }
-        filename = self.context['request'].query_params['name_of_file']
-        url = boto3.client('s3',
+
+        fields = {"acl": "public-read"}
+
+        # Ensure that the ACL isn't changed and restrict the user to a length
+        # between 10 and 100.
+        conditions = [
+            {"acl": "public-read"},
+            ["content-length-range", 1, 1048576] # i changed this from 10-100 to 1-1048576 i'm quite sure these are bytes.
+        ]
+        filename = self.context['request'].query_params.get('name_of_file','default.jpg')
+        client = boto3.client('s3',
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
             config=Config(signature_version=s3_signature['v4']),
             region_name='us-east-1'
-        ).generate_presigned_url(
-            ClientMethod='put_object', 
-            Params={
-                'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 
-                'Key': 'posts_pictures/'+str(obj.id)+'/'+filename,
-                "ContentType": "image/png",
-            },
-            HttpMethod="PUT",
-            ExpiresIn=100000,
-            )
+        )
+        url = client.generate_presigned_url('put_object',
+                                              Params={'Bucket': settings.AWS_STORAGE_BUCKET_NAME,
+                                                      'Key': 'posts_pictures/'+str(obj.id)+'/'+filename,
+                                                      'ACL': 'public-read'
+                                                      },
+                                              ExpiresIn=100000)
         return url
 
     def get_pics(self, obj):
