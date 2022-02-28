@@ -1,14 +1,8 @@
-import random
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from users.models import Profile
 
-from DjangoBlogTutorial import settings
-
 from blog.models import Post, PostPicture
-
-import boto3
-from botocore.client import Config
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -75,38 +69,7 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
     author_username = serializers.CharField(source="author.username", read_only=True)
     author_id = serializers.IntegerField(source="author.id", read_only=True)
     date_posted = serializers.DateTimeField(read_only=True)
-    pics = serializers.SerializerMethodField()
-
-    upload_pics_url = serializers.SerializerMethodField()
-
-    def get_upload_pics_url(self, obj):
-        s3_signature ={
-            'v4':'s3v4',
-            'v2':'s3'
-        }
-
-        fields = {"acl": "public-read"}
-
-        # Ensure that the ACL isn't changed and restrict the user to a length
-        # between 10 and 100.
-        conditions = [
-            {"acl": "public-read"},
-            ["content-length-range", 1, 1048576] # i changed this from 10-100 to 1-1048576 i'm quite sure these are bytes.
-        ]
-        filename = self.context['request'].query_params.get('name_of_file','default.jpg')
-        client = boto3.client('s3',
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            config=Config(signature_version=s3_signature['v4']),
-            region_name='us-east-1'
-        )
-        url = client.generate_presigned_url('put_object',
-                                              Params={'Bucket': settings.AWS_STORAGE_BUCKET_NAME,
-                                                      'Key': 'posts_pictures/'+str(obj.id)+'/'+filename,
-                                                      'ACL': 'public-read'
-                                                      },
-                                              ExpiresIn=100000)
-        return url
+    pics = serializers.SerializerMethodField()  
 
     def get_pics(self, obj):
         results = PostPicture.objects.filter(post__id=obj.id)

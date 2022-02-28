@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User, Group
+from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework import permissions
 
@@ -7,6 +8,34 @@ from api.permissions import AuthorAndStaffEdit, NoDeletePermission, DenyAccesToO
 
 from users.models import Profile
 from blog.models import Post, PostPicture
+
+
+import boto3
+from botocore.client import Config
+from DjangoBlogTutorial import settings
+
+def get_upload_pics_url(filename):
+        s3_signature ={
+            'v4':'s3v4',
+            'v2':'s3'
+        }
+        client = boto3.client('s3',
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            config=Config(signature_version=s3_signature['v4']),
+            region_name='us-east-1'
+        )
+        url = client.generate_presigned_url('put_object',
+                                              Params={'Bucket': settings.AWS_STORAGE_BUCKET_NAME,
+                                                      'Key': filename,
+                                                      'ACL': 'public-read'
+                                                      },
+                                              ExpiresIn=100000)
+        return url
+
+def createUploadLink(request):
+    filename = request.GET['filename']
+    return JsonResponse ({'url': get_upload_pics_url(filename) })
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')

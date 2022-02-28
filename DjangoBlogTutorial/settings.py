@@ -85,12 +85,20 @@ WSGI_APPLICATION = 'DjangoBlogTutorial.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'blog_db',
-        'USER': 'username',
+        'NAME': 'os01glados_blog_db',
+        'USER': 'postgres',
         'PASSWORD': 'password',
-        'HOST': 'localhost',
+        'HOST': 'os01glados-blog-db.cjkkfc9cffpn.us-east-1.rds.amazonaws.com',
         'PORT': '5432',
-    }
+    },
+    #     'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'blog_db',
+    #     'USER': 'username',
+    #     'PASSWORD': 'password',
+    #     'HOST': 'localhost',
+    #     'PORT': '5432',
+    # }
 }
 
 # Password validation

@@ -36,7 +36,7 @@ router.register(r'profiles',api_views.ProfileViewSet)
 router.register(r'postPics', api_views.PostPicViewSet)
 
 urlpatterns = [
-
+    path('api/geterate-upload-link/', api_views.createUploadLink, name='api_create_link'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
