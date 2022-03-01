@@ -19,6 +19,7 @@ djangorestframework-simplejwt = "*"
 django-storages = "*"
 boto3 = "*"
 django-s3direct = "*"
+gunicorn = "*"
 
 [dev-packages]
 
@@ -27,3 +28,4 @@ python_version = "3.8"
 
 [scripts]
 runserver = "python manage.py runserver"
+unicorn = "gunicorn DjangoBlogTutorial.wsgi"

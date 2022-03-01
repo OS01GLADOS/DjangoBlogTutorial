@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  backend:
+    restart: always
+    build: .
+    volumes:
+      - ./docker-backend:/code
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    command: /usr/local/bin/gunicorn DjangoBlogTutorial.wsgi:application -b :8000

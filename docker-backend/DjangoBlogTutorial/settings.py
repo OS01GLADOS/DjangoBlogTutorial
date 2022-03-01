@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'blog']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -84,21 +84,13 @@ WSGI_APPLICATION = 'DjangoBlogTutorial.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'os01glados_blog_db',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': 'os01glados-blog-db.cjkkfc9cffpn.us-east-1.rds.amazonaws.com',
-        'PORT': '5432',
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     },
-    #     'default': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'blog_db',
-    #     'USER': 'username',
-    #     'PASSWORD': 'password',
-    #     'HOST': 'localhost',
-    #     'PORT': '5432',
-    # }
 }
 
 # Password validation
@@ -170,9 +162,11 @@ REST_FRAMEWORK = {
     ],
 }
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5500',  'http://localhost:8000', 'http://localhost:8080', 'http://127.0.0.1:8080', 'http://blog:8080'
-]
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:5500',  'http://localhost:8000', 'http://localhost:8080', 'http://127.0.0.1:8080', 'http://blog:8080'
+# ]
+CORS_ALLOW_ALL_ORIGINS = True
+
 CORS_ALLOW_HEADERS = [
     "accept",
     "accept-encoding",
